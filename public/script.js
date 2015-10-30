@@ -120,4 +120,51 @@ $(function() {
   var s = document.getElementsByTagName('script')[0];
   s.parentNode.insertBefore(po, s);
 
+  var curAudio;
+  var curAudioContainer;
+
+  function play(e) {
+    e.preventDefault();
+
+    if (curAudio) {
+      curAudio.pause();
+      playStopped();
+    }
+
+    if ($(curAudioContainer).is(this)) {
+      curAudioContainer = null;
+    } else {
+      curAudioContainer = this;
+      soundContainer = $(curAudioContainer).find("~ div").first();
+      soundName = $(soundContainer).data("sound");
+
+      $(curAudioContainer).html('&#x275A;&#x275A; ');
+
+      curAudio = new Audio("https://emoji-cheat-sheet.campfirenow.com/sounds/" + soundName + ".mp3");
+      $(curAudio).on('ended', playStopped);
+      curAudio.play();
+    }
+  }
+
+  function playStopped() {
+    $(curAudioContainer).html('&#9658; ');
+  }
+
+  function canPlayMp3() {
+    var audio = new Audio(),
+      result = audio.canPlayType("audio/mpeg");
+
+    if(result != "") {
+      return true;
+    }
+  }
+
+  if (canPlayMp3() == true) {
+    $("#campfire-sounds li").prepend('<a href="#" class="play">&#9658; </a>');
+    $("#campfire-sounds .play").on("click", play);
+  }
+
+  $("#description a").on("click", function() {
+    _gaq.push(["_trackEvent", "Services", "Click", $(this).text()]);
+  });
 });
